@@ -1,21 +1,17 @@
 Vagrant.configure("2") do |config|
-  nodes = {
-    "debian1" => { hostname: "debian1", vmname: "DebianBookwormVM1" },
-    "debian2" => { hostname: "debian2", vmname: "DebianBookwormVM2" }
-  }
+  config.vm.box = "debian/bookworm64"
 
-  nodes.each do |name, opts|
-    config.vm.define name do |node|
-      node.vm.box = "debian/bookworm64"
-      node.vm.hostname = opts[:hostname]
+  (1..2).each do |i|
+    config.vm.define "debian#{i}" do |node|
+      node.vm.hostname = "debian#{i}"
 
       node.vm.provider "virtualbox" do |vb|
-        vb.name = opts[:vmname]
+        vb.name = "DebianBookwormVM#{i}"
         vb.cpus = 2
         vb.memory = 1024
       end
 
-      node.vm.network "private_network", type: "dhcp"
+      node.vm.network "private_network", ip: "192.168.56.#{10 + i}"
     end
   end
-end
+end 
